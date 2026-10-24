@@ -136,14 +136,14 @@ export default function App() {
 /* Fondo animado: manchas de limpieza cortas e intermitentes por toda la
    pantalla, en varias direcciones (sin limpiavidrios visible). */
 const SWIPES = [
-  { left: "10%", top: "13%", w: 170, h: 26, rot: -18, dur: 7.0, delay: 0.0 },
-  { left: "60%", top: "9%",  w: 150, h: 24, rot: 28,  dur: 8.5, delay: 1.6 },
-  { left: "34%", top: "29%", w: 190, h: 30, rot: -6,  dur: 9.0, delay: 3.2 },
-  { left: "74%", top: "40%", w: 140, h: 24, rot: 46,  dur: 7.5, delay: 4.6 },
-  { left: "8%",  top: "52%", w: 160, h: 26, rot: 14,  dur: 8.2, delay: 2.4 },
-  { left: "48%", top: "61%", w: 170, h: 26, rot: -32, dur: 9.6, delay: 5.4 },
-  { left: "26%", top: "78%", w: 150, h: 24, rot: 20,  dur: 8.0, delay: 6.3 },
-  { left: "68%", top: "83%", w: 160, h: 26, rot: -14, dur: 7.2, delay: 3.8 },
+  { left: "6%",  top: "6%",  w: 240, h: 52, rot: -18, dur: 7.0, delay: 0.0 },
+  { left: "54%", top: "4%",  w: 220, h: 48, rot: 26,  dur: 8.5, delay: 1.4 },
+  { left: "26%", top: "20%", w: 260, h: 56, rot: -8,  dur: 9.0, delay: 3.0 },
+  { left: "66%", top: "33%", w: 210, h: 48, rot: 42,  dur: 7.5, delay: 4.4 },
+  { left: "4%",  top: "46%", w: 240, h: 52, rot: 14,  dur: 8.2, delay: 2.2 },
+  { left: "44%", top: "56%", w: 250, h: 54, rot: -30, dur: 9.6, delay: 5.2 },
+  { left: "20%", top: "72%", w: 230, h: 50, rot: 20,  dur: 8.0, delay: 6.1 },
+  { left: "60%", top: "84%", w: 240, h: 52, rot: -14, dur: 7.2, delay: 3.6 },
 ];
 function GlassBg() {
   return (
@@ -389,7 +389,7 @@ function Runner({ routine, onExit }) {
 /* ---------------- paleta azul / modo claro ---------------- */
 const C = {
   bgTop: "#d6e9ff", bgBot: "#9ec4f5",
-  card: "rgba(255,255,255,0.82)", border: "#bcd7f5",
+  card: "rgba(255,255,255,0.72)", border: "#bcd7f5",
   text: "#0f2f5c", muted: "#4f6a93",
   accent: "#2563eb", accent2: "#38bdf8", accentSoft: "#cfe3ff", track: "#c3dcfb",
   danger: "#e2483c",
