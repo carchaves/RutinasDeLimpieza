@@ -1,0 +1,10 @@
+{
+  "appId": "com.raflos.rutinasdelimpieza",
+  "appName": "Rutinas de limpieza",
+  "webDir": "dist",
+  "plugins": {
+    "CapacitorUpdater": {
+      "autoUpdate": false
+    }
+  }
+}

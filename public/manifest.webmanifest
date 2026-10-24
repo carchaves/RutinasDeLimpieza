@@ -1,0 +1,12 @@
+{
+  "name": "Rutinas de limpieza",
+  "short_name": "Limpieza",
+  "description": "Rutinas de limpieza guiadas con temporizador y voz.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0e1512",
+  "theme_color": "#0e1512",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
