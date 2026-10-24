@@ -1,8 +1,28 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Play, Pause, SkipForward, SkipBack, X, Plus, Trash2,
-  Pencil, ArrowLeft, Sparkles, GripVertical,
+  Pencil, ArrowLeft, GripVertical,
 } from "lucide-react";
+
+/* Escoba (mismo glifo que el icono de la app) */
+function Broom({ size = 22, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 1024 1024" fill="none" aria-hidden="true">
+      <g fill={color}>
+        <rect x="454" y="188" width="116" height="252" rx="58" />
+        <rect x="166" y="404" width="692" height="458" rx="60" />
+      </g>
+      <g stroke="#ffffff" strokeWidth="26" strokeLinecap="round">
+        <line x1="210" y1="520" x2="814" y2="520" />
+        <line x1="306" y1="560" x2="306" y2="812" />
+        <line x1="409" y1="560" x2="409" y2="812" />
+        <line x1="512" y1="560" x2="512" y2="812" />
+        <line x1="615" y1="560" x2="615" y2="812" />
+        <line x1="718" y1="560" x2="718" y2="812" />
+      </g>
+    </svg>
+  );
+}
 import { say, warmVoice } from "./voice.js";
 
 const KEY = "rutinas_limpieza_v2";
@@ -115,7 +135,7 @@ function RoutineList({ routines, onPlay, onEdit, onAdd }) {
   return (
     <>
       <header style={S.header}>
-        <div style={S.brand}><Sparkles size={22} color={C.accent} /> <span>Limpieza</span></div>
+        <div style={S.brand}><Broom size={24} color={C.accent} /> <span>Limpieza</span></div>
       </header>
       <main style={S.main}>
         {routines.map((r) => {
