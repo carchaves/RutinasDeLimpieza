@@ -10,11 +10,56 @@
     <link rel="apple-touch-icon" href="/icon.svg" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Rutinas de limpieza</title>
     <style>
       html, body { margin: 0; padding: 0; width: 100%; background: #d6e9ff; min-height: 100vh; }
       * { -webkit-tap-highlight-color: transparent; }
       #root { width: 100%; }
+
+      /* --- Fondo: limpieza de vidrio con limpiavidrios --- */
+      .glass-bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+      .glass-fog {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(120px 120px at 18% 30%, rgba(255,255,255,0.35), transparent 70%),
+          radial-gradient(160px 160px at 78% 22%, rgba(255,255,255,0.28), transparent 70%),
+          radial-gradient(140px 140px at 60% 70%, rgba(255,255,255,0.30), transparent 70%),
+          radial-gradient(100px 100px at 30% 82%, rgba(255,255,255,0.26), transparent 70%);
+        opacity: 0.9;
+      }
+      .squeegee {
+        position: absolute; left: 0; right: 0; height: 170px;
+        animation: sqSweep 8s cubic-bezier(.45,.05,.55,.95) infinite;
+        will-change: transform, opacity;
+      }
+      .squeegee .trail {
+        position: absolute; bottom: 16px; left: 5%; right: 5%; height: 150px; border-radius: 10px;
+        background: linear-gradient(to top, rgba(255,255,255,0.55), rgba(255,255,255,0.0));
+      }
+      .squeegee .blade {
+        position: absolute; bottom: 2px; left: 5%; right: 5%; height: 14px; border-radius: 8px;
+        background: linear-gradient(180deg, #6f93c4, #37527a);
+        box-shadow: 0 5px 14px rgba(20,41,75,0.22);
+      }
+      .squeegee .blade::after {
+        content: ""; position: absolute; left: 4px; right: 4px; top: 3px; height: 3px;
+        border-radius: 3px; background: rgba(255,255,255,0.45);
+      }
+      .squeegee .handle {
+        position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+        width: 12px; height: 52px; border-radius: 6px;
+        background: linear-gradient(180deg, #dbe8ff, #a9c4ea);
+      }
+      .drip { position: absolute; width: 2px; border-radius: 2px;
+        background: linear-gradient(to bottom, rgba(255,255,255,0.5), rgba(255,255,255,0)); }
+      @keyframes sqSweep {
+        0%   { transform: translateY(-22vh); opacity: 0; }
+        10%  { opacity: 1; }
+        90%  { opacity: 1; }
+        100% { transform: translateY(118vh); opacity: 0; }
+      }
     </style>
   </head>
   <body>

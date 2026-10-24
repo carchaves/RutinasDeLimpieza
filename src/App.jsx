@@ -110,22 +110,43 @@ export default function App() {
 
   return (
     <div style={S.app}>
-      {screen === "list" && (
-        <RoutineList routines={data.routines} onPlay={startRun}
-          onEdit={openEdit} onAdd={addRoutine} />
-      )}
-      {screen === "edit" && (
-        <Editor
-          routine={routine(editId)}
-          onChange={(nr) => update((rs) => rs.map((r) => (r.id === nr.id ? nr : r)))}
-          onDelete={() => { update((rs) => rs.filter((r) => r.id !== editId)); setScreen("list"); }}
-          onPlay={() => startRun(editId)}
-          onBack={() => setScreen("list")}
-        />
-      )}
-      {screen === "run" && (
-        <Runner routine={routine(runId)} onExit={() => setScreen("list")} />
-      )}
+      <GlassBg />
+      <div style={S.content}>
+        {screen === "list" && (
+          <RoutineList routines={data.routines} onPlay={startRun}
+            onEdit={openEdit} onAdd={addRoutine} />
+        )}
+        {screen === "edit" && (
+          <Editor
+            routine={routine(editId)}
+            onChange={(nr) => update((rs) => rs.map((r) => (r.id === nr.id ? nr : r)))}
+            onDelete={() => { update((rs) => rs.filter((r) => r.id !== editId)); setScreen("list"); }}
+            onPlay={() => startRun(editId)}
+            onBack={() => setScreen("list")}
+          />
+        )}
+        {screen === "run" && (
+          <Runner routine={routine(runId)} onExit={() => setScreen("list")} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* Fondo animado: limpieza de vidrio con limpiavidrios (reemplaza las burbujas). */
+function GlassBg() {
+  return (
+    <div className="glass-bg" aria-hidden="true">
+      <div className="glass-fog" />
+      <div className="drip" style={{ left: "22%", top: "12%", height: 90 }} />
+      <div className="drip" style={{ left: "70%", top: "24%", height: 70 }} />
+      <div className="drip" style={{ left: "45%", top: "55%", height: 110 }} />
+      <div className="drip" style={{ left: "84%", top: "60%", height: 60 }} />
+      <div className="squeegee">
+        <div className="trail" />
+        <div className="handle" />
+        <div className="blade" />
+      </div>
     </div>
   );
 }
@@ -371,8 +392,12 @@ const S = {
     minHeight: "100vh", display: "flex", flexDirection: "column",
     background: `linear-gradient(170deg, ${C.bgTop} 0%, ${C.bgBot} 100%)`,
     backgroundAttachment: "fixed", color: C.text,
-    fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif",
+    fontFamily: "'Quicksand',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif",
     paddingTop: "env(safe-area-inset-top)",
+  },
+  content: {
+    position: "relative", zIndex: 1, display: "flex", flexDirection: "column",
+    flex: 1, minHeight: "100vh",
   },
   header: {
     display: "flex", alignItems: "center", gap: 10, padding: "16px 16px 12px",
