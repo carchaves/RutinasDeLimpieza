@@ -122,14 +122,14 @@ function RoutineList({ routines, onPlay, onEdit, onAdd }) {
           const tot = r.items.reduce((a, b) => a + b.sec, 0);
           return (
             <div key={r.id} style={S.card}>
+              <button style={S.playRound} onClick={() => onPlay(r.id)} disabled={!r.items.length}>
+                <Play size={24} fill="#fff" color="#fff" />
+              </button>
               <div style={{ flex: 1, minWidth: 0 }} onClick={() => onEdit(r.id)}>
                 <div style={S.cardTitle}>{r.name}</div>
                 <div style={S.cardSub}>{r.items.length} pasos · {fmt(tot)}</div>
               </div>
               <button style={S.iconBtn} onClick={() => onEdit(r.id)}><Pencil size={18} /></button>
-              <button style={S.playRound} onClick={() => onPlay(r.id)} disabled={!r.items.length}>
-                <Play size={24} fill="#fff" color="#fff" />
-              </button>
             </div>
           );
         })}
@@ -339,22 +339,24 @@ function Runner({ routine, onExit }) {
 
 /* ---------------- paleta azul / modo claro ---------------- */
 const C = {
-  bg: "#eef3fb", card: "#ffffff", border: "#d6e1f2",
-  text: "#13294b", muted: "#6b7d99",
-  accent: "#2563eb", accentSoft: "#dbe8ff", track: "#dbe8ff",
+  bgTop: "#d6e9ff", bgBot: "#9ec4f5",
+  card: "rgba(255,255,255,0.82)", border: "#bcd7f5",
+  text: "#0f2f5c", muted: "#4f6a93",
+  accent: "#2563eb", accent2: "#38bdf8", accentSoft: "#cfe3ff", track: "#c3dcfb",
   danger: "#e2483c",
 };
 
 const S = {
   app: {
     minHeight: "100vh", display: "flex", flexDirection: "column",
-    background: C.bg, color: C.text,
+    background: `linear-gradient(170deg, ${C.bgTop} 0%, ${C.bgBot} 100%)`,
+    backgroundAttachment: "fixed", color: C.text,
     fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif",
     paddingTop: "env(safe-area-inset-top)",
   },
   header: {
-    display: "flex", alignItems: "center", gap: 10, padding: "14px 16px",
-    borderBottom: `1px solid ${C.border}`, background: C.card,
+    display: "flex", alignItems: "center", gap: 10, padding: "16px 16px 12px",
+    background: "transparent",
   },
   brand: { display: "flex", alignItems: "center", gap: 8, fontSize: 20, fontWeight: 700 },
   main: { flex: 1, padding: "14px 14px 110px", overflowY: "auto" },
@@ -366,7 +368,9 @@ const S = {
   cardTitle: { fontSize: 17, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" },
   cardSub: { fontSize: 13, color: C.muted, marginTop: 2 },
   playRound: {
-    width: 50, height: 50, borderRadius: 25, border: "none", background: C.accent,
+    width: 50, height: 50, borderRadius: 25, border: "none",
+    background: `linear-gradient(135deg, ${C.accent2}, ${C.accent})`,
+    boxShadow: "0 3px 8px rgba(37,99,235,0.35)",
     display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
   },
   iconBtn: { background: "none", border: "none", color: C.muted, padding: 6, display: "flex", alignItems: "center" },
@@ -404,10 +408,10 @@ const S = {
     position: "fixed", bottom: 0, left: 0, right: 0,
     padding: "14px 16px calc(14px + env(safe-area-inset-bottom))",
     display: "flex", gap: 10,
-    background: `linear-gradient(to top,${C.bg} 72%,transparent)`,
+    background: `linear-gradient(to top,${C.bgBot} 72%,transparent)`,
   },
   btn: { flex: 1, border: "none", borderRadius: 16, padding: 16, fontSize: 17, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" },
-  btnPrimary: { background: C.accent, color: "#fff" },
+  btnPrimary: { background: `linear-gradient(135deg, ${C.accent2}, ${C.accent})`, color: "#fff", boxShadow: "0 3px 8px rgba(37,99,235,0.3)" },
   btnGhost: { background: C.card, color: C.text, border: `1px solid ${C.border}` },
   btnDanger: { background: C.card, color: C.danger, border: `1px solid #f0cfcc` },
 };

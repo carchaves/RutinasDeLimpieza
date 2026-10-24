@@ -4,8 +4,8 @@
   "description": "Rutinas de limpieza guiadas con temporizador y voz.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#eef3fb",
-  "theme_color": "#eef3fb",
+  "background_color": "#d6e9ff",
+  "theme_color": "#d6e9ff",
   "icons": [
     { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ]
