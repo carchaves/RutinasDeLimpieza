@@ -133,20 +133,28 @@ export default function App() {
   );
 }
 
-/* Fondo animado: limpieza de vidrio con limpiavidrios (reemplaza las burbujas). */
+/* Fondo animado: manchas de limpieza cortas e intermitentes por toda la
+   pantalla, en varias direcciones (sin limpiavidrios visible). */
+const SWIPES = [
+  { left: "10%", top: "13%", w: 170, h: 26, rot: -18, dur: 7.0, delay: 0.0 },
+  { left: "60%", top: "9%",  w: 150, h: 24, rot: 28,  dur: 8.5, delay: 1.6 },
+  { left: "34%", top: "29%", w: 190, h: 30, rot: -6,  dur: 9.0, delay: 3.2 },
+  { left: "74%", top: "40%", w: 140, h: 24, rot: 46,  dur: 7.5, delay: 4.6 },
+  { left: "8%",  top: "52%", w: 160, h: 26, rot: 14,  dur: 8.2, delay: 2.4 },
+  { left: "48%", top: "61%", w: 170, h: 26, rot: -32, dur: 9.6, delay: 5.4 },
+  { left: "26%", top: "78%", w: 150, h: 24, rot: 20,  dur: 8.0, delay: 6.3 },
+  { left: "68%", top: "83%", w: 160, h: 26, rot: -14, dur: 7.2, delay: 3.8 },
+];
 function GlassBg() {
   return (
     <div className="glass-bg" aria-hidden="true">
       <div className="glass-fog" />
-      <div className="drip" style={{ left: "22%", top: "12%", height: 90 }} />
-      <div className="drip" style={{ left: "70%", top: "24%", height: 70 }} />
-      <div className="drip" style={{ left: "45%", top: "55%", height: 110 }} />
-      <div className="drip" style={{ left: "84%", top: "60%", height: 60 }} />
-      <div className="squeegee">
-        <div className="trail" />
-        <div className="handle" />
-        <div className="blade" />
-      </div>
+      {SWIPES.map((s, i) => (
+        <div key={i} className="swipe"
+          style={{ left: s.left, top: s.top, width: s.w, height: s.h, transform: `rotate(${s.rot}deg)` }}>
+          <div className="mark" style={{ animationDuration: `${s.dur}s`, animationDelay: `${s.delay}s` }} />
+        </div>
+      ))}
     </div>
   );
 }
