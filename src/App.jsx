@@ -194,10 +194,14 @@ function Editor({ routine, onChange, onDelete, onPlay, onBack }) {
   const [newName, setNewName] = useState("");
   const [newMin, setNewMin] = useState("");
   const [dragIdx, setDragIdx] = useState(null);
+  const [editIdx, setEditIdx] = useState(null);
   const listRef = useRef(null);
 
   const setItems = (items) => onChange({ ...routine, name, items });
   const saveName = (v) => { setName(v); onChange({ ...routine, name: v, items: routine.items }); };
+  const updateItem = (i, patch) => {
+    const it = [...routine.items]; it[i] = { ...it[i], ...patch }; setItems(it);
+  };
 
   const addItem = () => {
     const nm = newName.trim();
@@ -263,8 +267,8 @@ function Editor({ routine, onChange, onDelete, onPlay, onBack }) {
         {routine.items.map((it, i) => (
           <div key={it.id} data-row={i} style={{ ...S.item, ...(dragIdx === i ? S.itemDragging : null) }}>
             <span style={S.grab} onPointerDown={(e) => startDrag(i, e)}><GripVertical size={18} /></span>
-            <span style={S.itemName} onClick={() => editItem(i)}>{it.name}</span>
-            <span style={S.itemDur} onClick={() => editDur(i)}>{fmt(it.sec)}</span>
+            <span style={S.itemName} onClick={() => setEditIdx(i)}>{it.name}</span>
+            <span style={S.itemDur} onClick={() => setEditIdx(i)}>{fmt(it.sec)}</span>
             <button style={S.iconBtn} onClick={() => del(i)}><X size={18} /></button>
           </div>
         ))}
@@ -277,14 +281,86 @@ function Editor({ routine, onChange, onDelete, onPlay, onBack }) {
             onKeyDown={(e) => e.key === "Enter" && addItem()} />
           <button style={S.addBtn} onClick={addItem}><Plus size={22} /></button>
         </div>
-        <p style={S.hint}>Tocá el nombre o el tiempo para editar. Arrastrá ⠿ para reordenar.</p>
+        <p style={S.hint}>Tocá un paso para editarlo. Arrastrá ⠿ para reordenar.</p>
       </main>
       <footer style={S.footer}>
         <button style={{ ...S.btn, ...S.btnPrimary }} onClick={onPlay} disabled={!routine.items.length}>
           <Play size={22} fill="#fff" color="#fff" /> &nbsp;Empezar rutina
         </button>
       </footer>
+      {editIdx != null && routine.items[editIdx] && (
+        <ItemDialog
+          item={routine.items[editIdx]}
+          onUpdate={(patch) => updateItem(editIdx, patch)}
+          onDelete={() => { del(editIdx); setEditIdx(null); }}
+          onClose={() => setEditIdx(null)}
+        />
+      )}
     </>
+  );
+}
+
+/* ---------------- Pop-up de edición de paso ---------------- */
+function ItemDialog({ item, onUpdate, onDelete, onClose }) {
+  const [running, setRunning] = useState(false);
+  const [elapsed, setElapsed] = useState(0); // ms
+  const startRef = useRef(0);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (running) {
+      timerRef.current = setInterval(() => setElapsed(Date.now() - startRef.current), 100);
+    } else {
+      clearInterval(timerRef.current);
+    }
+    return () => clearInterval(timerRef.current);
+  }, [running]);
+
+  const toggleChrono = () => {
+    if (!running) { setElapsed(0); startRef.current = Date.now(); setRunning(true); }
+    else {
+      setRunning(false);
+      const secs = Math.max(5, Math.round(elapsed / 1000));
+      onUpdate({ sec: secs });
+    }
+  };
+
+  const mm = Math.floor(item.sec / 60);
+  const ss = item.sec % 60;
+  const setMin = (v) => { const m = Math.max(0, Math.min(99, parseInt(v || "0", 10) || 0)); onUpdate({ sec: Math.max(5, m * 60 + ss) }); };
+  const setSec = (v) => { const s = Math.max(0, Math.min(59, parseInt(v || "0", 10) || 0)); onUpdate({ sec: Math.max(5, mm * 60 + s) }); };
+
+  return (
+    <div style={S.overlay} onClick={onClose}>
+      <div style={S.dialog} onClick={(e) => e.stopPropagation()}>
+        <div style={S.dlgTitle}>Editar paso</div>
+
+        <div style={S.dlgLabel}>TÍTULO</div>
+        <input style={S.dlgInput} value={item.name}
+          onChange={(e) => onUpdate({ name: e.target.value })} placeholder="Nombre del paso" />
+
+        <div style={{ ...S.dlgLabel, marginTop: 14 }}>DURACIÓN</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <input style={S.dlgNum} inputMode="numeric" value={mm} onChange={(e) => setMin(e.target.value)} />
+          <span style={S.dlgUnit}>min</span>
+          <input style={S.dlgNum} inputMode="numeric" value={ss} onChange={(e) => setSec(e.target.value)} />
+          <span style={S.dlgUnit}>seg</span>
+        </div>
+
+        <div style={{ ...S.dlgLabel, marginTop: 16 }}>CRONÓMETRO</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button style={{ ...S.chronoBtn, background: running ? "#e2483c" : C.accent }} onClick={toggleChrono}>
+            {running ? "■ Detener y usar" : "⏱ Cronometrar"}
+          </button>
+          <span style={S.chronoTime}>{fmt(Math.round(elapsed / 1000))}</span>
+        </div>
+
+        <div style={S.dlgActions}>
+          <button style={S.dlgDelete} onClick={onDelete}>Borrar</button>
+          <button style={S.dlgDone} onClick={onClose}>Listo</button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -465,6 +541,33 @@ const S = {
   },
   btn: { flex: 1, border: "none", borderRadius: 16, padding: 16, fontSize: 17, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" },
   btnPrimary: { background: `linear-gradient(135deg, ${C.accent2}, ${C.accent})`, color: "#fff", boxShadow: "0 3px 8px rgba(37,99,235,0.3)" },
+  overlay: {
+    position: "fixed", inset: 0, zIndex: 50, background: "rgba(13,38,66,0.45)",
+    display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
+  },
+  dialog: {
+    width: "100%", maxWidth: 420, background: "#fbfdff", color: C.text,
+    borderRadius: 22, padding: 20, boxShadow: "0 18px 50px rgba(13,38,66,0.35)",
+  },
+  dlgTitle: { fontSize: 19, fontWeight: 700, marginBottom: 14 },
+  dlgLabel: { fontSize: 10, fontWeight: 700, letterSpacing: 1.2, color: C.muted, marginBottom: 6 },
+  dlgInput: {
+    width: "100%", boxSizing: "border-box", background: "#eef6ff", border: `1px solid ${C.border}`,
+    color: C.text, borderRadius: 12, padding: "11px 12px", fontSize: 16, fontWeight: 600, fontFamily: "inherit",
+  },
+  dlgNum: {
+    width: 64, textAlign: "center", background: "#eef6ff", border: `1px solid ${C.border}`,
+    color: C.accent, borderRadius: 10, padding: "9px 6px", fontSize: 16, fontWeight: 700, fontFamily: "inherit",
+  },
+  dlgUnit: { fontSize: 12, fontWeight: 700, color: C.muted },
+  chronoBtn: {
+    flex: 1, border: "none", color: "#fff", borderRadius: 14, padding: "13px 10px",
+    fontSize: 15, fontWeight: 700, fontFamily: "inherit",
+  },
+  chronoTime: { fontSize: 22, fontWeight: 700, color: C.accent, fontVariantNumeric: "tabular-nums", minWidth: 62, textAlign: "right" },
+  dlgActions: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 },
+  dlgDelete: { background: "none", border: "none", color: C.danger, fontSize: 15, fontWeight: 700, fontFamily: "inherit", padding: "8px 10px" },
+  dlgDone: { background: C.accent, border: "none", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "inherit", borderRadius: 12, padding: "10px 22px" },
   btnGhost: { background: C.card, color: C.text, border: `1px solid ${C.border}` },
   btnDanger: { background: C.card, color: C.danger, border: `1px solid #f0cfcc` },
 };
