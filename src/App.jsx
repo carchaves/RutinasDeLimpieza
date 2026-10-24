@@ -193,7 +193,7 @@ function Editor({ routine, onChange, onDelete, onPlay, onBack }) {
   const [name, setName] = useState(routine.name);
   const [newName, setNewName] = useState("");
   const [newMin, setNewMin] = useState("");
-  const [dragIdx, setDragIdx] = useState(null);
+  const [dragId, setDragId] = useState(null);
   const [editIdx, setEditIdx] = useState(null);
   const listRef = useRef(null);
 
@@ -226,27 +226,35 @@ function Editor({ routine, onChange, onDelete, onPlay, onBack }) {
   };
 
   // ---- drag para reordenar (pointer events) ----
-  const startDrag = (i, e) => {
+  const startDrag = (id, e) => {
     e.preventDefault();
-    setDragIdx(i);
+    setDragId(id);
     const move = (ev) => {
-      const el = document.elementFromPoint(ev.clientX, ev.clientY);
-      const row = el && el.closest("[data-row]");
-      if (!row) return;
-      const to = +row.getAttribute("data-row");
-      setDragIdx((from) => {
-        if (from === null || to === from) return from;
-        const it = [...routine.items];
-        const [moved] = it.splice(from, 1);
-        it.splice(to, 0, moved);
-        setItems(it);
-        return to;
+      const list = listRef.current;
+      if (!list) return;
+      const rows = Array.from(list.querySelectorAll("[data-row]"));
+      if (!rows.length) return;
+      const y = ev.clientY;
+      // índice de inserción = primer row cuyo centro está por debajo del dedo
+      let target = rows.findIndex((r) => {
+        const b = r.getBoundingClientRect();
+        return y < b.top + b.height / 2;
       });
+      if (target === -1) target = rows.length - 1;
+      const cur = routine.items.findIndex((it) => it.id === id);
+      if (cur === -1) return;
+      target = Math.max(0, Math.min(routine.items.length - 1, target));
+      if (target !== cur) {
+        const it = [...routine.items];
+        const [moved] = it.splice(cur, 1);
+        it.splice(target, 0, moved);
+        setItems(it);
+      }
     };
     const up = () => {
       document.removeEventListener("pointermove", move);
       document.removeEventListener("pointerup", up);
-      setDragIdx(null);
+      setDragId(null);
     };
     document.addEventListener("pointermove", move);
     document.addEventListener("pointerup", up);
@@ -265,8 +273,8 @@ function Editor({ routine, onChange, onDelete, onPlay, onBack }) {
       </header>
       <main style={S.main} ref={listRef}>
         {routine.items.map((it, i) => (
-          <div key={it.id} data-row={i} style={{ ...S.item, ...(dragIdx === i ? S.itemDragging : null) }}>
-            <span style={S.grab} onPointerDown={(e) => startDrag(i, e)}><GripVertical size={18} /></span>
+          <div key={it.id} data-row={i} style={{ ...S.item, ...(dragId === it.id ? S.itemDragging : null) }}>
+            <span style={S.grab} onPointerDown={(e) => startDrag(it.id, e)}><GripVertical size={18} /></span>
             <span style={S.itemName} onClick={() => setEditIdx(i)}>{it.name}</span>
             <span style={S.itemDur} onClick={() => setEditIdx(i)}>{fmt(it.sec)}</span>
             <button style={S.iconBtn} onClick={() => del(i)}><X size={18} /></button>
